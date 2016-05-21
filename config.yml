@@ -1,0 +1,48 @@
+acceleration:
+  look: 0.03
+  takeoff:
+    vertical: 0.5
+    look: 0.5
+
+takeoff:
+  glide_millis: 1000
+  tap_millis: 500
+
+max_velocity: 2.0
+
+# Parameters to World.Spigot.playEffect().
+# Potentially good particles: LARGE_SMOKE, PARTICLE_SMOKE, EXPLOSION,
+# FIREWORKS_SPARK, FLAME, MOBSPAWNER_FLAMES, SMALL_SMOKE
+exhaust:
+#  effect: EXPLOSION
+  effect: FIREWORKS_SPARK
+  id: 0
+  data: 0
+  offset: 0.3
+  speed: 0.01
+  count: 5
+  radius: 128
+#  sound: BLOCK_CHORUS_FLOWER_GROW
+  sound: ENTITY_ELDER_GUARDIAN_AMBIENT
+  volume: 4.0
+
+broken:
+  sound: BLOCK_FURNACE_FIRE_CRACKLE
+  volume: 3.0
+  glide: true
+  glide_fall_reduction: 2.0
+
+altimeter:
+  enabled: true
+  ceiling: 276.0
+  colours:
+    '100': RED
+    '200': BLUE
+    '256': WHITE
+    '276': PINK
+    '999999': PURPLE
+
+vacuum:
+  enabled: true
+  altitude: 276.0
+  damage: 0.5

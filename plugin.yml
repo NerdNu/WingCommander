@@ -1,0 +1,22 @@
+name: ${project.name}
+version: ${project.version}
+author: totemo
+authors: [totemo]
+description: ${project.description}
+website: ${project.url}
+main: io.totemo.wingcommander.WingCommander
+
+permissions:
+  wingcommander.fly:
+    description: Permission to use powered flight.
+    default: op
+  wingcommander.admin:
+    description: Permission to administer the plugin.
+    default: op
+
+commands:
+  wingcommander:
+    description: ${project.name} administrative command.
+    permission: wingcommander.admin
+    usage: |
+      /<command> reload: Reload the configuration.
