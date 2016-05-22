@@ -34,15 +34,15 @@ broken:
 
 altimeter:
   enabled: true
-  ceiling: 276.0
+  ceiling: 300.0
   colours:
     '100': RED
     '200': BLUE
     '256': WHITE
-    '276': PINK
+    '300': PINK
     '999999': PURPLE
 
 vacuum:
   enabled: true
-  altitude: 276.0
-  damage: 0.5
+  altitude: 300.0
+  damage: 1.0
