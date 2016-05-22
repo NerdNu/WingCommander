@@ -8,6 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -22,15 +24,19 @@ public class PlayerState {
      * Constructor.
      *
      * @param player the player.
+     * @param config the configuration from which player preferences are loaded.
      */
-    public PlayerState(Player player) {
+    public PlayerState(Player player, YamlConfiguration config) {
         _player = player;
         _altitudeBossBar = Bukkit.getServer().createBossBar("Altitude", BarColor.BLUE, BarStyle.SEGMENTED_20);
         _altitudeBossBar.addPlayer(_player);
         _altitudeBossBar.setProgress(0);
+        _altitudeBossBar.setVisible(false);
         _speedBossBar = Bukkit.getServer().createBossBar("Speed", WingCommander.CONFIG.SPEEDOMETER_COLOUR, BarStyle.SEGMENTED_20);
         _speedBossBar.addPlayer(_player);
         _speedBossBar.setProgress(0);
+        _speedBossBar.setVisible(false);
+        load(config);
     }
 
     // ------------------------------------------------------------------------
@@ -79,16 +85,87 @@ public class PlayerState {
 
     // ------------------------------------------------------------------------
     /**
+     * Set or toggle visibility of the altimeter.
+     *
+     * @param visibility the new visibility state, or null to toggle.
+     */
+    public void showAltimeter(Boolean visibility) {
+        _showAltimeter = (visibility == null) ? !_showAltimeter : visibility;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the altimeter is shown.
+     *
+     * @return true if the altimeter is shown.
+     */
+    public boolean isAltimeterShown() {
+        return _showAltimeter;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Set or toggle visibility of the speedometer.
+     *
+     * @param visibility the new visibility state, or null to toggle.
+     */
+    public void showSpeedometer(Boolean visibility) {
+        _showSpeedometer = (visibility == null) ? !_showSpeedometer : visibility;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the speedometer is shown.
+     *
+     * @return true if the speedometer is shown.
+     */
+    public boolean isSpeedometerShown() {
+        return _showSpeedometer;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Save this player's preferences to the specified configuration.
+     *
+     * @param config the configuration to update.
+     */
+    public void save(YamlConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection(_player.getUniqueId().toString());
+        section.set("name", _player.getName());
+        section.set("altimeter", _showAltimeter);
+        section.set("speedometer", _showSpeedometer);
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Load the Player's preferences from the specified configuration
+     *
+     * @param config the configuration from which player preferences are loaded.
+     */
+    protected void load(YamlConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection(_player.getUniqueId().toString());
+        if (section == null) {
+            section = config.createSection(_player.getUniqueId().toString());
+            _showAltimeter = true;
+            _showSpeedometer = true;
+        } else {
+            _showAltimeter = section.getBoolean("altimeter");
+            _showSpeedometer = section.getBoolean("speedometer");
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    /**
      * Update BossBars according to the player's state and the configuration.
      */
     protected void updateBossBars() {
         // If you show the altimeter when the player has equipped elytra and
         // not on the ground, every little jump will flash the altimeter.
         // Test for gliding instead.
-        if (WingCommander.CONFIG.ALTIMETER_ENABLED && WingCommander.isFlightCapable(_player) && _player.isGliding()) {
-            if (!_altitudeBossBar.isVisible()) {
-                _altitudeBossBar.setVisible(true);
-            }
+        if (WingCommander.CONFIG.ALTIMETER_ENABLED && _showAltimeter &&
+            WingCommander.isFlightCapable(_player) && _player.isGliding()) {
+
+            _altitudeBossBar.setVisible(true);
             double altitude = _player.getLocation().getY();
             for (Entry<Integer, BarColor> entry : WingCommander.CONFIG.ALTIMETER_COLOURS.entrySet()) {
                 if (altitude < entry.getKey()) {
@@ -99,16 +176,16 @@ public class PlayerState {
             _altitudeBossBar.setTitle(String.format("Altitude: %d", (int) altitude));
             _altitudeBossBar.setProgress(Math.min(1.0, Math.max(0.0, altitude / WingCommander.CONFIG.ALTIMETER_CEILING)));
         } else {
-            if (_altitudeBossBar.isVisible()) {
-                _altitudeBossBar.setVisible(false);
-            }
+            _altitudeBossBar.setVisible(false);
         }
 
-        if (WingCommander.CONFIG.SPEEDOMETER_ENABLED && WingCommander.isFlightCapable(_player) && _player.isGliding()) {
+        if (WingCommander.CONFIG.SPEEDOMETER_ENABLED && _showSpeedometer &&
+            WingCommander.isFlightCapable(_player) && _player.isGliding()) {
+
             _speedBossBar.setVisible(true);
 
             double speed = _player.getVelocity().length();
-            _speedBossBar.setTitle(String.format("Speed: %2.2g", speed));
+            _speedBossBar.setTitle(String.format("Speed: %3.1f", 20 * speed));
             _speedBossBar.setProgress(Math.min(1.0, Math.max(0.0, speed / WingCommander.CONFIG.SPEEDOMETER_MAX)));
         } else {
             _speedBossBar.setVisible(false);
@@ -234,4 +311,17 @@ public class PlayerState {
      * BossBar used to display the player's speed.
      */
     protected BossBar _speedBossBar;
+
+    /**
+     * If true, the altimeter is visible (notwithstanding other requirements for
+     * it to be shown).
+     */
+    protected boolean _showAltimeter;
+
+    /**
+     * If true, the speedometer is visible (notwithstanding other requirements
+     * for it to be shown).
+     */
+    protected boolean _showSpeedometer;
+
 } // class PlayerState

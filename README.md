@@ -9,9 +9,11 @@ Features
  * Requires no commands for powered flight.  The crouch/sneak key is used
    as the accelerator when the player is off the ground and wearing elytra.
  * Optionally shows the player a colour-coded altimeter when in powered flight.
- * Optionally shows the player a speedometer when in powered flight.
+ * Optionally shows the player a speedometer (in blocks/sec) when in powered flight.
  * Optionally damages the player above a configurable altitude (due to the lack
    of breathable air).
+ * The visibility of gauges can be controlled by the `/gauge` command and is
+   persistent across login sessions.
  * Virtually all aspects of flight dynamics and displays are configurable.
 
 
@@ -34,6 +36,7 @@ Commands
 --------
 
  * `/wingcommander reload` - Reload the plugin configuration.
+ * `/gauge [altitude|speed] [off|on]` - Toggle or set visibility of a specific gauge or all gauges.
 
 
 Configuration
@@ -74,6 +77,6 @@ Configuration
 Permissions
 -----------
 
- * `wingcommander.fly` - Permission to use powered flight. Without this
-   permission, elytra can still be used in their default mode, to glide.
+ * `wingcommander.fly` - Permission to use powered flight and `/gauge`.
+   Without this permission, elytra can still be used in their default mode, to glide.
  * `wingcommander.admin` - Permission to administer the plugin (run `/wingcommander reload`).

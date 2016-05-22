@@ -263,5 +263,4 @@ public class Configuration {
             return null;
         }
     }
-
 } // class Configuration

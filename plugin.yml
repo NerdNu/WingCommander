@@ -20,3 +20,9 @@ commands:
     permission: wingcommander.admin
     usage: |
       /<command> reload: Reload the configuration.
+
+  gauge:
+    description: Toggle or set visibility of a specific gauge or all gauges.
+    permission: wingcommander.fly
+    usage: |
+      /<command> [altitude|speed] [off|on]: Toggle or set visibility of a specific gauge or all gauges.

@@ -1,5 +1,7 @@
 package io.totemo.wingcommander;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -7,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,11 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 // ----------------------------------------------------------------------------
 /**
  * Plugin, command handling and event handler class.
- *
- * The main features are:
- * <ul>
- * <li></li>
- * </ul>
  */
 public class WingCommander extends JavaPlugin implements Listener {
     /**
@@ -47,6 +45,9 @@ public class WingCommander extends JavaPlugin implements Listener {
         saveDefaultConfig();
         CONFIG.reload();
 
+        File playersFile = new File(WingCommander.PLUGIN.getDataFolder(), PLAYERS_FILE);
+        _playerConfig = YamlConfiguration.loadConfiguration(playersFile);
+
         getServer().getPluginManager().registerEvents(this, this);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
@@ -65,6 +66,11 @@ public class WingCommander extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
+        try {
+            _playerConfig.save(new File(WingCommander.PLUGIN.getDataFolder(), PLAYERS_FILE));
+        } catch (IOException ex) {
+            WingCommander.PLUGIN.getLogger().warning("Unable to save player data: " + ex.getMessage());
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -80,6 +86,9 @@ public class WingCommander extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.GOLD + getName() + " configuration reloaded.");
                 return true;
             }
+        } else if (command.getName().equalsIgnoreCase("gauge")) {
+            cmdGauge(sender, args);
+            return true;
         }
 
         sender.sendMessage(ChatColor.RED + "Invalid command syntax.");
@@ -93,7 +102,7 @@ public class WingCommander extends JavaPlugin implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        _state.put(player.getName(), new PlayerState(player));
+        _state.put(player.getName(), new PlayerState(player, _playerConfig));
     }
 
     // ------------------------------------------------------------------------
@@ -102,7 +111,8 @@ public class WingCommander extends JavaPlugin implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        _state.remove(event.getPlayer().getName());
+        PlayerState state = _state.remove(event.getPlayer().getName());
+        state.save(_playerConfig);
     }
 
     // ------------------------------------------------------------------------
@@ -146,6 +156,79 @@ public class WingCommander extends JavaPlugin implements Listener {
     }
 
     // ------------------------------------------------------------------------
+    /**
+     * Handle /gauge [altitude|speed] [off|on].
+     *
+     * Also accept /gauge help.
+     */
+    protected void cmdGauge(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You need to be in-game to use gauges.");
+        }
+
+        if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help")) || args.length > 2) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "/gauge [altitude|speed] [off|on]" +
+                               ChatColor.WHITE + " - Toggle or set the visibility of a specific gauge or all gauges.");
+        } else {
+            String gauge;
+            String visibilityString;
+            if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("off") || args[0].equalsIgnoreCase("on")) {
+                    gauge = null;
+                    visibilityString = args[0];
+                } else {
+                    gauge = args[0];
+                    visibilityString = null;
+                }
+            } else {
+                gauge = args[0];
+                visibilityString = args[1];
+            }
+
+            // Visibility null signifies toggle.
+            Boolean visibility = null;
+            if (visibilityString != null) {
+                if (visibilityString.equalsIgnoreCase("off")) {
+                    visibility = false;
+                } else if (visibilityString.equalsIgnoreCase("on")) {
+                    visibility = true;
+                } else {
+                    sender.sendMessage(ChatColor.RED + "The visibility value must be 'off' or 'on'.");
+                    return;
+                }
+            }
+
+            PlayerState state = getState((Player) sender);
+            if (gauge == null) {
+                state.showAltimeter(visibility);
+                state.showSpeedometer(visibility);
+                sender.sendMessage(ChatColor.DARK_AQUA + "All gauges will be " +
+                                   (visibility ? "shown." : "hidden."));
+            } else if (gauge.equalsIgnoreCase("altitude")) {
+                state.showAltimeter(visibility);
+                sender.sendMessage(ChatColor.DARK_AQUA + "The altimeter will be " +
+                                   (state.isAltimeterShown() ? "shown." : "hidden."));
+            } else if (gauge.equalsIgnoreCase("speed")) {
+                state.showSpeedometer(visibility);
+                sender.sendMessage(ChatColor.DARK_AQUA + "The speedometer will be " +
+                                   (state.isSpeedometerShown() ? "shown." : "hidden."));
+            } else {
+                sender.sendMessage(ChatColor.RED + "The gauge name must be 'altitude' or 'speed'.");
+            }
+        }
+    } // cmdGauge
+
+    // ------------------------------------------------------------------------
+    /**
+     * Name of players file.
+     */
+    protected static final String PLAYERS_FILE = "players.yml";
+
+    /**
+     * Configuration file for per-player settings.
+     */
+    protected YamlConfiguration _playerConfig;
+
     /**
      * Map from Player name to {@link PlayerState} instance.
      *
