@@ -41,8 +41,6 @@ public class PlayerState {
             _player.setGliding(true);
         }
 
-        // TODO: Show boss bar for fuel gauge.
-
         // If a player loses glide in flight, let them glide again in the air
         // by pressing crouch.
         if (_player.isSneaking() && WingCommander.isFlightCapable(_player) && !_player.isOnGround()) {
@@ -81,7 +79,10 @@ public class PlayerState {
      * Update BossBars according to the player's state and the configuration.
      */
     protected void updateBossBars() {
-        if (WingCommander.CONFIG.ALTIMETER_ENABLED && _player.isGliding()) {
+        // If you show the altimeter when the player has equipped elytra and
+        // not on the ground, every little jump will flash the altimeter.
+        // Test for gliding instead.
+        if (WingCommander.CONFIG.ALTIMETER_ENABLED && WingCommander.isFlightCapable(_player) && _player.isGliding()) {
             if (!_altitudeBossBar.isVisible()) {
                 _altitudeBossBar.setVisible(true);
             }
@@ -110,7 +111,6 @@ public class PlayerState {
         if (WingCommander.CONFIG.VACUUM_ENABLED &&
             _player.getLocation().getY() >= WingCommander.CONFIG.VACUUM_ALTITUDE) {
             _player.damage(WingCommander.CONFIG.VACUUM_DAMAGE);
-            _player.setRemainingAir(0);
         }
     }
 

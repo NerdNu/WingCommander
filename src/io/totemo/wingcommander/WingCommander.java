@@ -52,8 +52,7 @@ public class WingCommander extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    PlayerState state = getState(player);
-                    state.onTick();
+                    getState(player).onTick();
                 }
             }
         }, 1, 1);
