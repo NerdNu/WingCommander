@@ -9,7 +9,7 @@ Features
  * Requires no commands for powered flight.  The crouch/sneak key is used
    as the accelerator when the player is off the ground and wearing elytra.
  * Optionally shows the player a colour-coded altimeter when in powered flight.
- * Optionally shows the a speedometer when in powered flight.
+ * Optionally shows the player a speedometer when in powered flight.
  * Optionally damages the player above a configurable altitude (due to the lack
    of breathable air).
  * Virtually all aspects of flight dynamics and displays are configurable.
