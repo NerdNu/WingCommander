@@ -40,7 +40,11 @@ altimeter:
     '200': BLUE
     '256': WHITE
     '300': PINK
-    '999999': PURPLE
+
+speedometer:
+  enabled: true
+  max: 2.0
+  colour: BLUE
 
 vacuum:
   enabled: true

@@ -28,6 +28,9 @@ public class PlayerState {
         _altitudeBossBar = Bukkit.getServer().createBossBar("Altitude", BarColor.BLUE, BarStyle.SEGMENTED_20);
         _altitudeBossBar.addPlayer(_player);
         _altitudeBossBar.setProgress(0);
+        _speedBossBar = Bukkit.getServer().createBossBar("Speed", WingCommander.CONFIG.SPEEDOMETER_COLOUR, BarStyle.SEGMENTED_20);
+        _speedBossBar.addPlayer(_player);
+        _speedBossBar.setProgress(0);
     }
 
     // ------------------------------------------------------------------------
@@ -99,6 +102,16 @@ public class PlayerState {
             if (_altitudeBossBar.isVisible()) {
                 _altitudeBossBar.setVisible(false);
             }
+        }
+
+        if (WingCommander.CONFIG.SPEEDOMETER_ENABLED && WingCommander.isFlightCapable(_player) && _player.isGliding()) {
+            _speedBossBar.setVisible(true);
+
+            double speed = _player.getVelocity().length();
+            _speedBossBar.setTitle(String.format("Speed: %2.2g", speed));
+            _speedBossBar.setProgress(Math.min(1.0, Math.max(0.0, speed / WingCommander.CONFIG.SPEEDOMETER_MAX)));
+        } else {
+            _speedBossBar.setVisible(false);
         }
     } // updateBossBars
 
@@ -216,4 +229,9 @@ public class PlayerState {
      * BossBar used to display the player's altitude.
      */
     protected BossBar _altitudeBossBar;
+
+    /**
+     * BossBar used to display the player's speed.
+     */
+    protected BossBar _speedBossBar;
 } // class PlayerState

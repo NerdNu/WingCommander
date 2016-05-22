@@ -13,7 +13,8 @@ import org.bukkit.configuration.ConfigurationSection;
  */
 public class Configuration {
     /**
-     * Magnitude of the vertical acceleration applied on take-off.
+     * Magnitude of the vertical acceleration applied on take-off in blocks per
+     * tick per tick.
      */
     public double ACCELERATION_TAKEOFF_VERTICAL;
 
@@ -41,7 +42,8 @@ public class Configuration {
     public long TAKEOFF_TAP_MILLIS;
 
     /**
-     * Maximum magnitude of the velocity vector, enforced when power is applied.
+     * Maximum magnitude of the velocity vector, in blocks per tick, enforced
+     * when power is applied.
      */
     public double MAX_VELOCITY;
 
@@ -140,6 +142,22 @@ public class Configuration {
     public TreeMap<Integer, BarColor> ALTIMETER_COLOURS = new TreeMap<Integer, BarColor>();
 
     /**
+     * If true, players can use the speedometer; otherwise it is not visible for
+     * anybody.
+     */
+    public boolean SPEEDOMETER_ENABLED;
+
+    /**
+     * Speed above which the speedometer reads full.
+     */
+    public double SPEEDOMETER_MAX;
+
+    /**
+     * Colour of the speedometer.
+     */
+    public BarColor SPEEDOMETER_COLOUR;
+
+    /**
      * If true, vacuum asphyxiation damage is enabled.
      */
     public boolean VACUUM_ENABLED;
@@ -196,6 +214,7 @@ public class Configuration {
         ALTIMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("altimeter.enabled");
         ALTIMETER_CEILING = WingCommander.PLUGIN.getConfig().getDouble("altimeter.ceiling");
         ALTIMETER_COLOURS.clear();
+        ALTIMETER_COLOURS.put(999999, BarColor.PURPLE);
         ConfigurationSection altimeterColours = WingCommander.PLUGIN.getConfig().getConfigurationSection("altimeter.colours");
         for (String key : altimeterColours.getKeys(false)) {
             String value = altimeterColours.getString(key);
@@ -205,8 +224,18 @@ public class Configuration {
             } catch (NumberFormatException ex) {
                 WingCommander.PLUGIN.getLogger().warning("Non-integer altitude value: " + key);
             } catch (IllegalArgumentException ex) {
-                WingCommander.PLUGIN.getLogger().warning("Invalid bar colour: " + value);
+                WingCommander.PLUGIN.getLogger().warning("Invalid altimeter colour: " + value);
             }
+        }
+
+        SPEEDOMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("speedometer.enabled");
+        SPEEDOMETER_MAX = WingCommander.PLUGIN.getConfig().getDouble("speedometer.max");
+        String speedometerColour = WingCommander.PLUGIN.getConfig().getString("speedometer.colour");
+        try {
+            SPEEDOMETER_COLOUR = BarColor.valueOf(speedometerColour);
+        } catch (IllegalArgumentException ex) {
+            WingCommander.PLUGIN.getLogger().warning("Invalid speedometer colour: " + speedometerColour);
+            SPEEDOMETER_COLOUR = BarColor.BLUE;
         }
 
         VACUUM_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("vacuum.enabled");
