@@ -46,6 +46,13 @@ speedometer:
   max: 2.0
   colour: BLUE
 
+wingometer:
+  enabled: true
+  colours:
+    '10': RED
+    '30': YELLOW
+    '101': GREEN
+
 vacuum:
   enabled: true
   altitude: 300.0

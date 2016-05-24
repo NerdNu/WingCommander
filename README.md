@@ -2,6 +2,8 @@ WingCommander
 =============
 A Minecraft 1.9 Bukkit plugin that makes elytra capable of powered flight.
 
+![WingCommander 1.6.0](https://raw.github.com/totemo/WingCommander/master/images/screenshot.png)
+
 
 Features
 --------
@@ -10,6 +12,8 @@ Features
    as the accelerator when the player is off the ground and wearing elytra.
  * Optionally shows the player a colour-coded altimeter when in powered flight.
  * Optionally shows the player a speedometer (in blocks/sec) when in powered flight.
+ * Optionally shows the player a wingometer (percentage wing durability remaining)
+   when in powered flight.
  * Optionally damages the player above a configurable altitude (due to the lack
    of breathable air).
  * The visibility of gauges can be controlled by the `/gauge` command and is
@@ -69,6 +73,8 @@ Configuration
 | `speedometer.enabled` | If true, players can use the speedometer; otherwise it is not visible for anybody. |
 | `speedometer.max` | Speed above which the speedometer reads full. |
 | `speedometer.colour` | Colour of the speedometer. |
+| `wingometer.enabled` |  If true, players can use the wingometer; otherwise it is not visible for anybody. |
+| `wingometer.colours` | Map from integer (quoted as string) percentage wing durability remaining to bar colour (BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW). For each number, the specified colour is shown when wing durability falls below that percentage. |
 | `vacuum.enabled`	| If true, vacuum asphyxiation damage is enabled. |
 | `vacuum.altitude` | Altitude above which the player takes asphyxiation damage due to the vacuum. |
 | `vacuum.damage` | Asphyxiation damage per tick due to the vacuum. Note: in reality, damage cool downs prevent this from happening on every tick. |

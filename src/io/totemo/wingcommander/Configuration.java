@@ -1,5 +1,6 @@
 package io.totemo.wingcommander;
 
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.bukkit.Effect;
@@ -158,6 +159,18 @@ public class Configuration {
     public BarColor SPEEDOMETER_COLOUR;
 
     /**
+     * If true, players can use the wingometer (wing condition percentage);
+     * otherwise it is not visible for anybody.
+     */
+    public boolean WINGOMETER_ENABLED;
+
+    /**
+     * Wingometer BossBar colours, indexed by the percentage durability below
+     * which they are active.
+     */
+    public TreeMap<Integer, BarColor> WINGOMETER_COLOURS = new TreeMap<Integer, BarColor>();
+
+    /**
      * If true, vacuum asphyxiation damage is enabled.
      */
     public boolean VACUUM_ENABLED;
@@ -213,20 +226,7 @@ public class Configuration {
 
         ALTIMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("altimeter.enabled");
         ALTIMETER_CEILING = WingCommander.PLUGIN.getConfig().getDouble("altimeter.ceiling");
-        ALTIMETER_COLOURS.clear();
-        ALTIMETER_COLOURS.put(999999, BarColor.PURPLE);
-        ConfigurationSection altimeterColours = WingCommander.PLUGIN.getConfig().getConfigurationSection("altimeter.colours");
-        for (String key : altimeterColours.getKeys(false)) {
-            String value = altimeterColours.getString(key);
-            try {
-                int altitude = Integer.parseInt(key);
-                ALTIMETER_COLOURS.put(altitude, BarColor.valueOf(value));
-            } catch (NumberFormatException ex) {
-                WingCommander.PLUGIN.getLogger().warning("Non-integer altitude value: " + key);
-            } catch (IllegalArgumentException ex) {
-                WingCommander.PLUGIN.getLogger().warning("Invalid altimeter colour: " + value);
-            }
-        }
+        ALTIMETER_COLOURS = loadBarColourMap("altimeter.colours", "altitude", BarColor.PURPLE);
 
         SPEEDOMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("speedometer.enabled");
         SPEEDOMETER_MAX = WingCommander.PLUGIN.getConfig().getDouble("speedometer.max");
@@ -237,6 +237,9 @@ public class Configuration {
             WingCommander.PLUGIN.getLogger().warning("Invalid speedometer colour: " + speedometerColour);
             SPEEDOMETER_COLOUR = BarColor.BLUE;
         }
+
+        WINGOMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("wingometer.enabled");
+        WINGOMETER_COLOURS = loadBarColourMap("wingometer.colours", "wing durability", BarColor.WHITE);
 
         VACUUM_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("vacuum.enabled");
         VACUUM_ALTITUDE = WingCommander.PLUGIN.getConfig().getDouble("vacuum.altitude");
@@ -262,5 +265,59 @@ public class Configuration {
             WingCommander.PLUGIN.getLogger().warning("Invalid " + description + " name: \"" + soundName + "\"");
             return null;
         }
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Load a configuration map from integer threshold to corresponding
+     * BarColor.
+     *
+     * Below each threshold key, the bar colour is the corresponding value.
+     * Keys, though integers, must be formatted as quoted strings.
+     *
+     * @param path the path to the map configuration section.
+     * @param description a displayable string describing what the thresholds
+     *        and colours signify, e.g. "altitude".
+     * @param maxColour the default colour for any values above the highest
+     *        threshold listed in the configuration section.
+     */
+    protected TreeMap<Integer, BarColor> loadBarColourMap(String path, String description, BarColor maxColour) {
+        TreeMap<Integer, BarColor> colours = new TreeMap<Integer, BarColor>();
+        colours.put(Integer.MAX_VALUE, maxColour);
+        ConfigurationSection section = WingCommander.PLUGIN.getConfig().getConfigurationSection(path);
+        for (String key : section.getKeys(false)) {
+            String valueString = section.getString(key);
+            try {
+                int value = Integer.parseInt(key);
+                colours.put(value, BarColor.valueOf(valueString));
+            } catch (NumberFormatException ex) {
+                WingCommander.PLUGIN.getLogger().warning("Non-integer " + description + " value: " + key);
+            } catch (IllegalArgumentException ex) {
+                WingCommander.PLUGIN.getLogger().warning("Invalid " + description + " colour: " + valueString);
+            }
+        }
+        return colours;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return the BarColor corresponding to the specified numeric key in the
+     * specified colour map.
+     *
+     * Note that key does not have to exactly match one of the colour
+     * thresholds; any value below the threshold is assigned that colour.
+     *
+     * @param map one of the colour map configuration settings.
+     * @param key the number used to look up a colour from the map.
+     * @return the BarColor corresponding to key.
+     */
+    protected BarColor getBarColor(TreeMap<Integer, BarColor> map, int key) {
+        for (Entry<Integer, BarColor> entry : map.entrySet()) {
+            if (key < entry.getKey()) {
+                return entry.getValue();
+            }
+        }
+        // Not actually reachable unless key == Integer.MAX_VALUE.
+        return null;
     }
 } // class Configuration
