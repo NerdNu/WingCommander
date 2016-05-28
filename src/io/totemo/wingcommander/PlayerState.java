@@ -1,6 +1,7 @@
 package io.totemo.wingcommander;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
@@ -54,7 +55,7 @@ public class PlayerState {
 
         // If a player loses glide in flight, let them glide again in the air
         // by pressing crouch.
-        if (_player.isSneaking() && WingCommander.isFlightCapable(_player) && !_player.isOnGround()) {
+        if (_player.isSneaking() && WingCommander.isFlightCapable(_player) && !_player.isOnGround() && !_player.isFlying()) {
             accelerate(WingCommander.CONFIG.ACCELERATION_LOOK);
         }
 
