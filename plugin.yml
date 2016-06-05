@@ -10,6 +10,9 @@ permissions:
   wingcommander.fly:
     description: Permission to use powered flight.
     default: op
+  wingcommander.gauge:
+    description: Permission to use /gauge and see gauges.
+    default: op
   wingcommander.admin:
     description: Permission to administer the plugin.
     default: op
@@ -23,6 +26,6 @@ commands:
 
   gauge:
     description: Toggle or set visibility of a specific gauge or all gauges.
-    permission: wingcommander.fly
+    permission: wingcommander.gauge
     usage: |
       /<command> [altitude|speed|wings] [off|on]: Toggle or set visibility of a specific gauge or all gauges.

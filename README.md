@@ -83,6 +83,6 @@ Configuration
 Permissions
 -----------
 
- * `wingcommander.fly` - Permission to use powered flight and `/gauge`.
-   Without this permission, elytra can still be used in their default mode, to glide.
+ * `wingcommander.fly` - Permission to use powered flight.  Without this permission, elytra can still be used in their default mode, to glide.
+ * `wingcommander.gauge` - Permmision to see gauges and use `/gauge`.
  * `wingcommander.admin` - Permission to administer the plugin (run `/wingcommander reload`).

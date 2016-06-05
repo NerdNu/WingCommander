@@ -134,11 +134,23 @@ public class WingCommander extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
-     * Return true if the Player is wearing elytra and has permission for
-     * powered flight.
+     * Return true if the player is wearing elytra.
      *
      * Note that this method doesn't care whether the elytra are broken
      * (durability <=1).
+     *
+     * @param player the player.
+     * @return true if the player is wearing elytra.
+     */
+    protected static boolean isWearingElytra(Player player) {
+        ItemStack chest = player.getEquipment().getChestplate();
+        return chest != null && chest.getType() == Material.ELYTRA;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the Player is wearing elytra and has permission for
+     * powered flight.
      *
      * @param player the player.
      * @return true if the Player is wearing elytra and has permission for
@@ -146,7 +158,7 @@ public class WingCommander extends JavaPlugin implements Listener {
      */
     protected static boolean isFlightCapable(Player player) {
         ItemStack chest = player.getEquipment().getChestplate();
-        return chest != null && chest.getType() == Material.ELYTRA && player.hasPermission("wingcommander.fly");
+        return isWearingElytra(player) && player.hasPermission("wingcommander.fly");
     }
 
     // ------------------------------------------------------------------------

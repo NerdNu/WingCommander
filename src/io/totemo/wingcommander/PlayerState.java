@@ -1,7 +1,6 @@
 package io.totemo.wingcommander;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
@@ -181,12 +180,12 @@ public class PlayerState {
      * Update BossBars according to the player's state and the configuration.
      */
     protected void updateBossBars() {
+        boolean glidingAndPermitted = _player.isGliding() && _player.hasPermission("wingcommander.gauge");
+
         // If you show the altimeter when the player has equipped elytra and
         // not on the ground, every little jump will flash the altimeter.
         // Test for gliding instead.
-        if (WingCommander.CONFIG.ALTIMETER_ENABLED && _showAltimeter &&
-            WingCommander.isFlightCapable(_player) && _player.isGliding()) {
-
+        if (glidingAndPermitted && WingCommander.CONFIG.ALTIMETER_ENABLED && _showAltimeter) {
             double altitude = _player.getLocation().getY();
             _altitudeBossBar.setColor(WingCommander.CONFIG.getBarColor(WingCommander.CONFIG.ALTIMETER_COLOURS, (int) altitude));
             _altitudeBossBar.setTitle(String.format("Altitude: %d", (int) altitude));
@@ -196,9 +195,7 @@ public class PlayerState {
             _altitudeBossBar.setVisible(false);
         }
 
-        if (WingCommander.CONFIG.SPEEDOMETER_ENABLED && _showSpeedometer &&
-            WingCommander.isFlightCapable(_player) && _player.isGliding()) {
-
+        if (glidingAndPermitted && WingCommander.CONFIG.SPEEDOMETER_ENABLED && _showSpeedometer) {
             double speed = _player.getVelocity().length();
             _speedBossBar.setTitle(String.format("Speed: %3.1f", 20 * speed));
             _speedBossBar.setProgress(Math.min(1.0, Math.max(0.0, speed / WingCommander.CONFIG.SPEEDOMETER_MAX)));
@@ -207,9 +204,7 @@ public class PlayerState {
             _speedBossBar.setVisible(false);
         }
 
-        if (WingCommander.CONFIG.WINGOMETER_ENABLED && _showWingometer &&
-            WingCommander.isFlightCapable(_player) && _player.isGliding()) {
-
+        if (glidingAndPermitted && WingCommander.CONFIG.WINGOMETER_ENABLED && _showWingometer) {
             ItemStack chest = _player.getEquipment().getChestplate();
             int remainingDurability = Material.ELYTRA.getMaxDurability() - chest.getDurability();
             double fraction = remainingDurability / (double) Material.ELYTRA.getMaxDurability();
