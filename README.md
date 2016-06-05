@@ -40,7 +40,7 @@ Commands
 --------
 
  * `/wingcommander reload` - Reload the plugin configuration.
- * `/gauge [altitude|speed] [off|on]` - Toggle or set visibility of a specific gauge or all gauges.
+ * `/gauge [altitude|speed|wings] [off|on]` - Toggle or set visibility of a specific gauge or all gauges.
 
 
 Configuration
