@@ -4,7 +4,7 @@
 	<groupId>io.totemo</groupId>
 	<name>WingCommander</name>
 	<artifactId>${project.name}</artifactId>
-	<version>1.6.1</version>
+	<version>1.7.0</version>
 	<packaging>jar</packaging>
 	<description>Enables powered flight with elytra.</description>
 	<url>https://github.com/totemo/${project.name}</url>
