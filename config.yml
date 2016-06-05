@@ -53,7 +53,19 @@ wingometer:
     '30': YELLOW
     '101': GREEN
 
+pitchmeter:
+  enabled: true
+  min: -90.0
+  max: 90.0
+  colours:
+    '-20': RED
+    '-10': YELLOW
+    '11': GREEN
+    '21': YELLOW
+    '91': RED
+
 vacuum:
   enabled: true
   altitude: 300.0
   damage: 1.0
+

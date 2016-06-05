@@ -157,7 +157,6 @@ public class WingCommander extends JavaPlugin implements Listener {
      *         powered flight.
      */
     protected static boolean isFlightCapable(Player player) {
-        ItemStack chest = player.getEquipment().getChestplate();
         return isWearingElytra(player) && player.hasPermission("wingcommander.fly");
     }
 
@@ -174,7 +173,7 @@ public class WingCommander extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
-     * Handle /gauge [altitude|speed] [off|on].
+     * Handle /gauge [altitude|speed|wings|pitch] [off|on].
      *
      * Also accept /gauge help.
      */
@@ -184,7 +183,7 @@ public class WingCommander extends JavaPlugin implements Listener {
         }
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help")) || args.length > 2) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "/gauge [altitude|speed|wings] [off|on]" +
+            sender.sendMessage(ChatColor.DARK_AQUA + "/gauge [altitude|speed|wings|pitch] [off|on]" +
                                ChatColor.WHITE + " - Toggle or set the visibility of a specific gauge or all gauges.");
         } else {
             String gauge;
@@ -220,6 +219,7 @@ public class WingCommander extends JavaPlugin implements Listener {
                 state.showAltimeter(visibility);
                 state.showSpeedometer(visibility);
                 state.showWingometer(visibility);
+                state.showPitchmeter(visibility);
                 sender.sendMessage(ChatColor.DARK_AQUA + "All gauges will be " +
                                    (visibility ? "shown." : "hidden."));
             } else if (gauge.equalsIgnoreCase("altitude")) {
@@ -234,8 +234,12 @@ public class WingCommander extends JavaPlugin implements Listener {
                 state.showWingometer(visibility);
                 sender.sendMessage(ChatColor.DARK_AQUA + "The wing durability meter will be " +
                                    (state.isWingometerShown() ? "shown." : "hidden."));
+            } else if (gauge.equalsIgnoreCase("pitch")) {
+                state.showPitchmeter(visibility);
+                sender.sendMessage(ChatColor.DARK_AQUA + "The pitch angle will be " +
+                                   (state.isPitchmeterShown() ? "shown." : "hidden."));
             } else {
-                sender.sendMessage(ChatColor.RED + "The gauge name must be 'altitude' or 'speed'.");
+                sender.sendMessage(ChatColor.RED + "The gauge name must be 'altitude', 'speed', 'wings' or 'pitch'.");
             }
         }
     } // cmdGauge

@@ -14,6 +14,8 @@ Features
  * Optionally shows the player a speedometer (in blocks/sec) when in powered flight.
  * Optionally shows the player a wingometer (percentage wing durability remaining)
    when in powered flight.
+ * Optionally shows the player a pitch meter (nose angle in degrees, positive up)
+   when gliding, whether powered or not.
  * Optionally damages the player above a configurable altitude (due to the lack
    of breathable air).
  * The visibility of gauges can be controlled by the `/gauge` command and is
@@ -40,7 +42,7 @@ Commands
 --------
 
  * `/wingcommander reload` - Reload the plugin configuration.
- * `/gauge [altitude|speed|wings] [off|on]` - Toggle or set visibility of a specific gauge or all gauges.
+ * `/gauge [altitude|speed|wings|pitch] [off|on]` - Toggle or set visibility of a specific gauge or all gauges.
 
 
 Configuration
@@ -67,15 +69,19 @@ Configuration
 | `broken.volume` | Volume of the broken wing sound (range is about 15 times this many blocks). |
 | `broken.glide` | If true, gliding to a safe landing on broken wings is possible when thrust is applied. |
 | `broken.glide_fall_reduction` | Reduction in fall damage per tick that power is applied while falling on broken wings. |
-| `altimeter.enabled` |  If true, players can use the altimeter; otherwise it is not visible for anybody. |
+| `altimeter.enabled` | If true, players can use the altimeter; otherwise it is not visible for anybody. |
 | `altimeter.ceiling` | Altitude at which the altitude bar reads full. |
 | `altimeter.colours` | Map from integer (quoted as string) altitude to bar colour (BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW). For each number, the specified colour is shown below that altitude value. |
 | `speedometer.enabled` | If true, players can use the speedometer; otherwise it is not visible for anybody. |
 | `speedometer.max` | Speed above which the speedometer reads full. |
 | `speedometer.colour` | Colour of the speedometer. |
-| `wingometer.enabled` |  If true, players can use the wingometer; otherwise it is not visible for anybody. |
+| `wingometer.enabled` | If true, players can use the wingometer; otherwise it is not visible for anybody. |
 | `wingometer.colours` | Map from integer (quoted as string) percentage wing durability remaining to bar colour (BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW). For each number, the specified colour is shown when wing durability falls below that percentage. |
-| `vacuum.enabled`	| If true, vacuum asphyxiation damage is enabled. |
+| `pitchmeter.enabled` | If true, players can use the pitch meter (nose angle in degrees, positive up). |
+| `pitchmeter.min` | Pitch value for minimum pitch meter reading. |
+| `pitchmeter.max` | Pitch value for maximum pitch meter reading. |
+| `pitchmeter.colours` | Map from integer (quoted as string) pitch angle in degrees to bar colour (BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW). For each number, the specified colour is shown when the pitch falls below that angle. |
+| `vacuum.enabled` | If true, vacuum asphyxiation damage is enabled. |
 | `vacuum.altitude` | Altitude above which the player takes asphyxiation damage due to the vacuum. |
 | `vacuum.damage` | Asphyxiation damage per tick due to the vacuum. Note: in reality, damage cool downs prevent this from happening on every tick. |
 

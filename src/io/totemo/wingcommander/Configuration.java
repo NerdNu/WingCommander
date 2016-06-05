@@ -171,6 +171,28 @@ public class Configuration {
     public TreeMap<Integer, BarColor> WINGOMETER_COLOURS = new TreeMap<Integer, BarColor>();
 
     /**
+     * If true, players can use the pitch meter (nose angle in degrees, positive
+     * up).
+     */
+    public boolean PITCHMETER_ENABLED;
+
+    /**
+     * Pitch value for minimum pitch meter reading.
+     */
+    public double PITCHMETER_MIN;
+
+    /**
+     * Pitch value for maximum pitch meter reading.
+     */
+    public double PITCHMETER_MAX;
+
+    /**
+     * Pitchmenter BossBar colours, indexed by the pitch angle in degrees below
+     * which they are active.
+     */
+    public TreeMap<Integer, BarColor> PITCHMETER_COLOURS = new TreeMap<Integer, BarColor>();
+
+    /**
      * If true, vacuum asphyxiation damage is enabled.
      */
     public boolean VACUUM_ENABLED;
@@ -240,6 +262,11 @@ public class Configuration {
 
         WINGOMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("wingometer.enabled");
         WINGOMETER_COLOURS = loadBarColourMap("wingometer.colours", "wing durability", BarColor.WHITE);
+
+        PITCHMETER_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("pitchmeter.enabled");
+        PITCHMETER_MIN = WingCommander.PLUGIN.getConfig().getDouble("pitchmeter.min");
+        PITCHMETER_MAX = WingCommander.PLUGIN.getConfig().getDouble("pitchmeter.max");
+        PITCHMETER_COLOURS = loadBarColourMap("pitchmeter.colours", "pitch", BarColor.WHITE);
 
         VACUUM_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("vacuum.enabled");
         VACUUM_ALTITUDE = WingCommander.PLUGIN.getConfig().getDouble("vacuum.altitude");

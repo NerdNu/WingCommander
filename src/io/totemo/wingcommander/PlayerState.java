@@ -38,6 +38,10 @@ public class PlayerState {
         _wingsBossBar.addPlayer(_player);
         _wingsBossBar.setProgress(1.0);
         _wingsBossBar.setVisible(false);
+        _pitchBossBar = Bukkit.getServer().createBossBar("Pitch", BarColor.GREEN, BarStyle.SEGMENTED_20);
+        _pitchBossBar.addPlayer(_player);
+        _pitchBossBar.setProgress(0.5);
+        _pitchBossBar.setVisible(false);
         load(config);
     }
 
@@ -147,6 +151,26 @@ public class PlayerState {
 
     // ------------------------------------------------------------------------
     /**
+     * Set or toggle visibility of the pitch meter.
+     *
+     * @param visibility the new visibility state, or null to toggle.
+     */
+    public void showPitchmeter(Boolean visibility) {
+        _showPitchmeter = (visibility == null) ? !_showPitchmeter : visibility;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the pitch meter is shown.
+     *
+     * @return true if the pitch meter is shown.
+     */
+    public boolean isPitchmeterShown() {
+        return _showPitchmeter;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
      * Save this player's preferences to the specified configuration.
      *
      * @param config the configuration to update.
@@ -157,6 +181,7 @@ public class PlayerState {
         section.set("altimeter", _showAltimeter);
         section.set("speedometer", _showSpeedometer);
         section.set("wingometer", _showWingometer);
+        section.set("pitchmeter", _showPitchmeter);
     }
 
     // ------------------------------------------------------------------------
@@ -173,6 +198,7 @@ public class PlayerState {
         _showAltimeter = section.getBoolean("altimeter", true);
         _showSpeedometer = section.getBoolean("speedometer", true);
         _showWingometer = section.getBoolean("wingometer", true);
+        _showPitchmeter = section.getBoolean("pitchmeter", true);
     }
 
     // ------------------------------------------------------------------------
@@ -215,6 +241,18 @@ public class PlayerState {
             _wingsBossBar.setVisible(true);
         } else {
             _wingsBossBar.setVisible(false);
+        }
+
+        if (glidingAndPermitted && WingCommander.CONFIG.PITCHMETER_ENABLED && _showPitchmeter) {
+            double pitch = -_player.getLocation().getPitch();
+            double fraction = (pitch - WingCommander.CONFIG.PITCHMETER_MIN) /
+                              (WingCommander.CONFIG.PITCHMETER_MAX - WingCommander.CONFIG.PITCHMETER_MIN);
+            _pitchBossBar.setColor(WingCommander.CONFIG.getBarColor(WingCommander.CONFIG.PITCHMETER_COLOURS, (int) pitch));
+            _pitchBossBar.setTitle(String.format("Pitch: %3.1f°", pitch));
+            _pitchBossBar.setProgress(Math.min(1.0, Math.max(0.0, fraction)));
+            _pitchBossBar.setVisible(true);
+        } else {
+            _pitchBossBar.setVisible(false);
         }
     } // updateBossBars
 
@@ -344,6 +382,11 @@ public class PlayerState {
     protected BossBar _wingsBossBar;
 
     /**
+     * BossBar used to display the player's pitch.
+     */
+    protected BossBar _pitchBossBar;
+
+    /**
      * If true, the altimeter is visible (notwithstanding other requirements for
      * it to be shown).
      */
@@ -360,5 +403,11 @@ public class PlayerState {
      * for it to be shown).
      */
     protected boolean _showWingometer;
+
+    /**
+     * If true, the pitch meter is visible (notwithstanding other requirements
+     * for it to be shown).
+     */
+    protected boolean _showPitchmeter;
 
 } // class PlayerState
