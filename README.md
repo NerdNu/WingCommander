@@ -56,6 +56,7 @@ Configuration
 | `takeoff.glide_millis` | Milliseconds after takeoff for which glide mode is forced. |
 | `takeoff.tap_millis` | Maximum period in milliseconds between taps on the crouch key to trigger a take-off. |
 | `max_velocity` | Maximum velocity in blocks per tick when thrust is applied. |
+| `gauge_debounce_millis` | Minimum glide time in unpowered flight before gauges will become visible. Gauges activate immediately in powered flight. |
 | `exhaust.effect` | Particle type of the thruster exhaust, or NONE. |
 | `exhaust.id` | Block type ID for particle effects that use one. |
 | `exhaust.data` | Block data for particle effects that use a block type. |

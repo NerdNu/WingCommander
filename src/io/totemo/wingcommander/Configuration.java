@@ -49,6 +49,13 @@ public class Configuration {
     public double MAX_VELOCITY;
 
     /**
+     * In order to "debounce" gauge activation, the player must glide for at
+     * least this many milliseconds before gauges will become visible
+     * (notwithstanding other visibility requirements).
+     */
+    public long GAUGE_DEBOUNCE_MILLIS;
+
+    /**
      * Particle type of the exhaust trail, generated when power is applied, or
      * "none" to suppress particles.
      */
@@ -222,6 +229,8 @@ public class Configuration {
         TAKEOFF_TAP_MILLIS = WingCommander.PLUGIN.getConfig().getLong("takeoff.tap_millis");
 
         MAX_VELOCITY = WingCommander.PLUGIN.getConfig().getDouble("max_velocity");
+
+        GAUGE_DEBOUNCE_MILLIS = WingCommander.PLUGIN.getConfig().getLong("gauge_debounce_millis");
 
         String exhaustEffectName = WingCommander.PLUGIN.getConfig().getString("exhaust.effect");
         try {

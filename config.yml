@@ -10,6 +10,8 @@ takeoff:
 
 max_velocity: 2.0
 
+gauge_debounce_millis: 1000
+
 # Parameters to World.Spigot.playEffect().
 # Potentially good particles: LARGE_SMOKE, PARTICLE_SMOKE, EXPLOSION,
 # FIREWORKS_SPARK, FLAME, MOBSPAWNER_FLAMES, SMALL_SMOKE

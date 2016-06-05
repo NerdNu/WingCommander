@@ -206,12 +206,27 @@ public class PlayerState {
      * Update BossBars according to the player's state and the configuration.
      */
     protected void updateBossBars() {
-        boolean glidingAndPermitted = _player.isGliding() && _player.hasPermission("wingcommander.gauge");
+        boolean gaugesMayActivate = _player.isGliding() && _player.hasPermission("wingcommander.gauge");
+
+        // Debounce gauge activation.
+        if (gaugesMayActivate) {
+            if (!_gaugesPossible) {
+                long now = System.currentTimeMillis();
+                if (_glideStartTime == 0) {
+                    _glideStartTime = now;
+                } else if (now - _glideStartTime > WingCommander.CONFIG.GAUGE_DEBOUNCE_MILLIS) {
+                    _gaugesPossible = true;
+                }
+            }
+        } else {
+            _gaugesPossible = false;
+            _glideStartTime = 0;
+        }
 
         // If you show the altimeter when the player has equipped elytra and
         // not on the ground, every little jump will flash the altimeter.
         // Test for gliding instead.
-        if (glidingAndPermitted && WingCommander.CONFIG.ALTIMETER_ENABLED && _showAltimeter) {
+        if (_gaugesPossible && WingCommander.CONFIG.ALTIMETER_ENABLED && _showAltimeter) {
             double altitude = _player.getLocation().getY();
             _altitudeBossBar.setColor(WingCommander.CONFIG.getBarColor(WingCommander.CONFIG.ALTIMETER_COLOURS, (int) altitude));
             _altitudeBossBar.setTitle(String.format("Altitude: %d", (int) altitude));
@@ -221,7 +236,7 @@ public class PlayerState {
             _altitudeBossBar.setVisible(false);
         }
 
-        if (glidingAndPermitted && WingCommander.CONFIG.SPEEDOMETER_ENABLED && _showSpeedometer) {
+        if (_gaugesPossible && WingCommander.CONFIG.SPEEDOMETER_ENABLED && _showSpeedometer) {
             double speed = _player.getVelocity().length();
             _speedBossBar.setTitle(String.format("Speed: %3.1f", 20 * speed));
             _speedBossBar.setProgress(Math.min(1.0, Math.max(0.0, speed / WingCommander.CONFIG.SPEEDOMETER_MAX)));
@@ -230,7 +245,7 @@ public class PlayerState {
             _speedBossBar.setVisible(false);
         }
 
-        if (glidingAndPermitted && WingCommander.CONFIG.WINGOMETER_ENABLED && _showWingometer) {
+        if (_gaugesPossible && WingCommander.CONFIG.WINGOMETER_ENABLED && _showWingometer) {
             ItemStack chest = _player.getEquipment().getChestplate();
             int remainingDurability = Material.ELYTRA.getMaxDurability() - chest.getDurability();
             double fraction = remainingDurability / (double) Material.ELYTRA.getMaxDurability();
@@ -243,7 +258,7 @@ public class PlayerState {
             _wingsBossBar.setVisible(false);
         }
 
-        if (glidingAndPermitted && WingCommander.CONFIG.PITCHMETER_ENABLED && _showPitchmeter) {
+        if (_gaugesPossible && WingCommander.CONFIG.PITCHMETER_ENABLED && _showPitchmeter) {
             double pitch = -_player.getLocation().getPitch();
             double fraction = (pitch - WingCommander.CONFIG.PITCHMETER_MIN) /
                               (WingCommander.CONFIG.PITCHMETER_MAX - WingCommander.CONFIG.PITCHMETER_MIN);
@@ -301,6 +316,7 @@ public class PlayerState {
      * @param acceleration acceleration to apply in the player's look direction.
      */
     protected void accelerate(double acceleration) {
+        _gaugesPossible = true;
         Location loc = _player.getLocation();
 
         // Base the pitch on the current (not new) speed. Good enough.
@@ -365,6 +381,21 @@ public class PlayerState {
      * Time stamp of the player's last take off.
      */
     protected long _takeOffTime;
+
+    /**
+     * If true, gauges can be shown.
+     *
+     * In order to "debounce" gauge activation, this flag will not be set until
+     * after the player has glided for at least
+     * WingCommander.CONFIG.GAUGE_DEBOUNCE_MILLIS milliseconds.
+     */
+    protected boolean _gaugesPossible;
+
+    /**
+     * Start time of the player's most recent glide, if they have permission to
+     * use gauges.
+     */
+    protected long _glideStartTime;
 
     /**
      * BossBar used to display the player's altitude.
