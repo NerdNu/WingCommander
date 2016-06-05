@@ -66,6 +66,11 @@ public class WingCommander extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
+
+        // Gauge settings weren't being saved on restart. Save all here.
+        for (PlayerState state : _state.values()) {
+            state.save(_playerConfig);
+        }
         try {
             _playerConfig.save(new File(WingCommander.PLUGIN.getDataFolder(), PLAYERS_FILE));
         } catch (IOException ex) {
