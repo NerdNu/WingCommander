@@ -214,6 +214,11 @@ public class Configuration {
      * Asphyxiation damage per tick due to the vacuum.
      */
     public double VACUUM_DAMAGE;
+    
+    /**
+     * TNT throw speed from left click.
+     */
+    public double TNT_THROW_SPEED;
 
     // ------------------------------------------------------------------------
     /**
@@ -280,6 +285,8 @@ public class Configuration {
         VACUUM_ENABLED = WingCommander.PLUGIN.getConfig().getBoolean("vacuum.enabled");
         VACUUM_ALTITUDE = WingCommander.PLUGIN.getConfig().getDouble("vacuum.altitude");
         VACUUM_DAMAGE = WingCommander.PLUGIN.getConfig().getDouble("vacuum.damage");
+        TNT_THROW_SPEED = WingCommander.PLUGIN.getConfig().getDouble("tnt_throw_speed", 1.0);
+
     } // reload
 
     // ------------------------------------------------------------------------
