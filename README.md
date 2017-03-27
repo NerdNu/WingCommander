@@ -21,7 +21,7 @@ Features
  * The visibility of gauges can be controlled by the `/gauge` command and is
    persistent across login sessions.
  * Virtually all aspects of flight dynamics and displays are configurable.
-
+ * Throw or drop primed TNT while flying.
 
 Controls
 --------
@@ -37,6 +37,7 @@ While the sprint or jump keys might be more intuitive keys to use for flight,
 neither triggers a suitable event at the server.  (The sprint key only triggers
 an event when moving forward on the ground.)
 
+While holding TNT, use left click to throw TNT or right click to drop it.
 
 Commands
 --------
@@ -85,6 +86,7 @@ Configuration
 | `vacuum.enabled` | If true, vacuum asphyxiation damage is enabled. |
 | `vacuum.altitude` | Altitude above which the player takes asphyxiation damage due to the vacuum. |
 | `vacuum.damage` | Asphyxiation damage per tick due to the vacuum. Note: in reality, damage cool downs prevent this from happening on every tick. |
+| `tnt_throw_speed` | Control TNT throw speed from left click |
 
 
 Permissions
@@ -92,4 +94,5 @@ Permissions
 
  * `wingcommander.fly` - Permission to use powered flight.  Without this permission, elytra can still be used in their default mode, to glide.
  * `wingcommander.gauge` - Permmision to see gauges and use `/gauge`.
+ * `wingcommander.tnt` - Permission to throw or drop TNT while flying.
  * `wingcommander.admin` - Permission to administer the plugin (run `/wingcommander reload`).

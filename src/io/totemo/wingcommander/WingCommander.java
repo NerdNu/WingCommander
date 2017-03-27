@@ -10,14 +10,20 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 // ----------------------------------------------------------------------------
 /**
@@ -131,6 +137,66 @@ public class WingCommander extends JavaPlugin implements Listener {
             getState(player).onCrouch();
         }
     }
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Handle player interactions.
+     * 
+     * In this case, TNT launching
+     *
+     */
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+    	Player player = event.getPlayer();
+    	
+    	// Check permissions
+    	if(!player.hasPermission("wingcommander.tnt")) {
+    		return;
+    	}
+
+    	
+    	// Only throw TNT if gliding
+    	if(!player.isGliding()) {
+    		return;
+    	}
+    	
+    	// Only handle left and right click air events
+    	Action action = event.getAction();
+    	if(action != Action.LEFT_CLICK_AIR && action != Action.RIGHT_CLICK_AIR) {
+    		return;
+    	}
+    	
+    	// See if there is TNT in our hand
+    	PlayerInventory inventory = player.getInventory();
+    	ItemStack stack = inventory.getItemInMainHand();
+    	if(stack.getType() != Material.TNT) {
+    		return;
+    	}
+    	
+    	// Use up a TNT
+    	int amount = stack.getAmount() - 1;
+    	if (amount > 1) {
+    		stack.setAmount(amount);
+    	} else {
+    		inventory.setItemInMainHand(null);
+    	}
+    	
+    	// Spawn TNT
+    	Entity tnt = player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
+    	
+    	if (action == Action.LEFT_CLICK_AIR) {
+    		// Throw the TNT forward
+    		Vector TNTVelocity = player.getLocation().getDirection();
+    		TNTVelocity.normalize();
+    		TNTVelocity.multiply(WingCommander.CONFIG.TNT_THROW_SPEED); // TNT speed
+    		TNTVelocity.add(player.getVelocity());
+    		tnt.setVelocity(TNTVelocity);
+    	} else if (action == Action.RIGHT_CLICK_AIR) {
+    		// Drop the TNT with current velocity
+    		tnt.setVelocity(player.getVelocity());
+    	}
+
+    } // OnPlayerInteract
 
     // ------------------------------------------------------------------------
     /**

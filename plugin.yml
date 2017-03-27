@@ -13,6 +13,9 @@ permissions:
   wingcommander.gauge:
     description: Permission to use /gauge and see gauges.
     default: op
+  wingcommander.tnt:
+    description: Permission to throw or drop TNT while flying.
+    default: op
   wingcommander.admin:
     description: Permission to administer the plugin.
     default: op
