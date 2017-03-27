@@ -137,65 +137,60 @@ public class WingCommander extends JavaPlugin implements Listener {
             getState(player).onCrouch();
         }
     }
-    
+
     // ------------------------------------------------------------------------
     /**
-     * Handle player interactions.
-     * 
-     * In this case, TNT launching
-     *
+     * Handle player interactions - launch TNT if permitted and gliding.
      */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-    	Player player = event.getPlayer();
-    	
-    	// Check permissions
-    	if(!player.hasPermission("wingcommander.tnt")) {
-    		return;
-    	}
+        Player player = event.getPlayer();
 
-    	
-    	// Only throw TNT if gliding
-    	if(!player.isGliding()) {
-    		return;
-    	}
-    	
-    	// Only handle left and right click air events
-    	Action action = event.getAction();
-    	if(action != Action.LEFT_CLICK_AIR && action != Action.RIGHT_CLICK_AIR) {
-    		return;
-    	}
-    	
-    	// See if there is TNT in our hand
-    	PlayerInventory inventory = player.getInventory();
-    	ItemStack stack = inventory.getItemInMainHand();
-    	if(stack.getType() != Material.TNT) {
-    		return;
-    	}
-    	
-    	// Use up a TNT
-    	int amount = stack.getAmount() - 1;
-    	if (amount > 1) {
-    		stack.setAmount(amount);
-    	} else {
-    		inventory.setItemInMainHand(null);
-    	}
-    	
-    	// Spawn TNT
-    	Entity tnt = player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
-    	
-    	if (action == Action.LEFT_CLICK_AIR) {
-    		// Throw the TNT forward
-    		Vector TNTVelocity = player.getLocation().getDirection();
-    		TNTVelocity.normalize();
-    		TNTVelocity.multiply(WingCommander.CONFIG.TNT_THROW_SPEED); // TNT speed
-    		TNTVelocity.add(player.getVelocity());
-    		tnt.setVelocity(TNTVelocity);
-    	} else if (action == Action.RIGHT_CLICK_AIR) {
-    		// Drop the TNT with current velocity
-    		tnt.setVelocity(player.getVelocity());
-    	}
+        // Check permissions
+        if (!player.hasPermission("wingcommander.tnt")) {
+            return;
+        }
 
+        // Only throw TNT if gliding
+        if (!player.isGliding()) {
+            return;
+        }
+
+        // Only handle left and right click air events
+        Action action = event.getAction();
+        if (action != Action.LEFT_CLICK_AIR && action != Action.RIGHT_CLICK_AIR) {
+            return;
+        }
+
+        // See if there is TNT in our hand
+        PlayerInventory inventory = player.getInventory();
+        ItemStack stack = inventory.getItemInMainHand();
+        if (stack.getType() != Material.TNT) {
+            return;
+        }
+
+        // Use up a TNT
+        int amount = stack.getAmount() - 1;
+        if (amount > 1) {
+            stack.setAmount(amount);
+        } else {
+            inventory.setItemInMainHand(null);
+        }
+
+        // Spawn TNT
+        Entity tnt = player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
+
+        if (action == Action.LEFT_CLICK_AIR) {
+            // Throw the TNT forward
+            Vector TNTVelocity = player.getLocation().getDirection();
+            TNTVelocity.normalize();
+            TNTVelocity.multiply(WingCommander.CONFIG.TNT_THROW_SPEED);
+            TNTVelocity.add(player.getVelocity());
+            tnt.setVelocity(TNTVelocity);
+        } else if (action == Action.RIGHT_CLICK_AIR) {
+            // Drop the TNT with current velocity
+            tnt.setVelocity(player.getVelocity());
+        }
     } // OnPlayerInteract
 
     // ------------------------------------------------------------------------
