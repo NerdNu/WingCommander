@@ -51,8 +51,7 @@ public class PlayerState {
      */
     public void onTick() {
         // During take-off, force glide.
-        long now = System.currentTimeMillis();
-        if (now - _takeOffTime < WingCommander.CONFIG.TAKEOFF_GLIDE_MILLIS) {
+        if (isTakingOff()) {
             _player.setGliding(true);
         }
 
@@ -78,8 +77,8 @@ public class PlayerState {
             long now = System.currentTimeMillis();
             if (now - _lastCrouchTime < WingCommander.CONFIG.TAKEOFF_TAP_MILLIS) {
                 _lastCrouchTime = 0;
-                _takeOffTime = now;
-                if (!areElytraBroken()) {
+                setTakingOff();
+                if (WingCommander.isWearingElytra(_player, true)) {
                     _player.setVelocity(new Vector(0, WingCommander.CONFIG.ACCELERATION_TAKEOFF_VERTICAL, 0));
                 }
                 accelerate(WingCommander.CONFIG.ACCELERATION_TAKEOFF_LOOK);
@@ -88,6 +87,28 @@ public class PlayerState {
             }
         }
     } // onCrouch
+
+    // ------------------------------------------------------------------------
+    /**
+     * Signify that the player has initiated a take-off.
+     * 
+     * The start time of the take-off is recorded, and glide is forced for the
+     * configured time period thereafter in {@link PlayerState#onTick()}.
+     */
+    public void setTakingOff() {
+        _takeOffTime = System.currentTimeMillis();
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the player is still in the time-limited take-off state.
+     * 
+     * @return true if the player is still in the time-limited take-off state.
+     */
+    public boolean isTakingOff() {
+        long now = System.currentTimeMillis();
+        return (now - _takeOffTime < WingCommander.CONFIG.TAKEOFF_GLIDE_MILLIS);
+    }
 
     // ------------------------------------------------------------------------
     /**
@@ -190,7 +211,7 @@ public class PlayerState {
      *
      * @param config the configuration from which player preferences are loaded.
      */
-    protected void load(YamlConfiguration config) {
+    public void load(YamlConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection(_player.getUniqueId().toString());
         if (section == null) {
             section = config.createSection(_player.getUniqueId().toString());
@@ -285,21 +306,6 @@ public class PlayerState {
 
     // ------------------------------------------------------------------------
     /**
-     * Return true if the player is not wearing eltra, or if they are too
-     * damaged to glide.
-     *
-     * @return true if the player is not wearing eltra, or if they are too
-     *         damaged to glide.
-     */
-    protected boolean areElytraBroken() {
-        ItemStack chest = _player.getEquipment().getChestplate();
-        return chest == null ||
-               chest.getType() != Material.ELYTRA ||
-               Material.ELYTRA.getMaxDurability() - chest.getDurability() < 1;
-    }
-
-    // ------------------------------------------------------------------------
-    /**
      * Boost the player's velocity in the player's look direction, but limit the
      * magnitude of the velocity to the configured maximum.
      *
@@ -328,14 +334,9 @@ public class PlayerState {
         float speedFraction = (float) (Math.max(0.0, velocity.dot(look)) / WingCommander.CONFIG.MAX_VELOCITY);
         float pitch = 0.5f + 1.5f * speedFraction;
 
-        if (areElytraBroken()) {
-            loc.getWorld().playSound(loc, WingCommander.CONFIG.BROKEN_SOUND,
-                                     WingCommander.CONFIG.BROKEN_VOLUME, pitch);
-            if (WingCommander.CONFIG.BROKEN_GLIDE) {
-                _player.setGliding(true);
-                _player.setFallDistance(Math.max(0, _player.getFallDistance() - WingCommander.CONFIG.BROKEN_GLIDE_FALL_REDUCTION));
-            }
-        } else {
+        // Method precondition is "wearing elytra irrespective of durability".
+        // Check for unbroken elytra.
+        if (WingCommander.isWearingElytra(_player, true)) {
             _player.setGliding(true);
 
             Vector boost = look;
@@ -362,6 +363,13 @@ public class PlayerState {
             if (WingCommander.CONFIG.EXHAUST_SOUND != null) {
                 loc.getWorld().playSound(loc, WingCommander.CONFIG.EXHAUST_SOUND,
                                          WingCommander.CONFIG.EXHAUST_VOLUME, pitch);
+            }
+        } else {
+            loc.getWorld().playSound(loc, WingCommander.CONFIG.BROKEN_SOUND,
+                                     WingCommander.CONFIG.BROKEN_VOLUME, pitch);
+            if (WingCommander.CONFIG.BROKEN_GLIDE) {
+                _player.setGliding(true);
+                _player.setFallDistance(Math.max(0, _player.getFallDistance() - WingCommander.CONFIG.BROKEN_GLIDE_FALL_REDUCTION));
             }
         }
     } // accelerate

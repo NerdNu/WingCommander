@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -140,21 +141,16 @@ public class WingCommander extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
-     * Handle player interactions - launch TNT if permitted and gliding.
+     * Handle player interactions:
+     * <ul>
+     * <li>Launch TNT if permitted and gliding.</li>
+     * <li>Set gliding if player right clicks a rocket while in the air and
+     * wearing elytra, to compensate for NCP's interference.</li>
+     * </ul>
      */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-
-        // Check permissions
-        if (!player.hasPermission("wingcommander.tnt")) {
-            return;
-        }
-
-        // Only throw TNT if gliding
-        if (!player.isGliding()) {
-            return;
-        }
 
         // Only handle left and right click air events
         Action action = event.getAction();
@@ -162,14 +158,32 @@ public class WingCommander extends JavaPlugin implements Listener {
             return;
         }
 
-        // See if there is TNT in our hand
         PlayerInventory inventory = player.getInventory();
         ItemStack stack = inventory.getItemInMainHand();
-        if (stack.getType() != Material.TNT) {
+
+        // Assisted takeoff if wearing unbroken elytra.
+        if (action == Action.RIGHT_CLICK_AIR &&
+            stack.getType() == Material.FIREWORK &&
+            !player.isOnGround() &&
+            isWearingElytra(player, true)) {
+
+            // Player must be in air, not water (to be like vanilla).
+            Block feetBlock = player.getLocation().getBlock();
+            if (feetBlock != null && feetBlock.getType() == Material.AIR) {
+                PlayerState state = getState(player);
+                state.setTakingOff();
+                player.setGliding(true);
+            }
+        }
+
+        // Only throw TNT if permitted, gliding and holding TNT.
+        if (!player.hasPermission("wingcommander.tnt") ||
+            !player.isGliding() ||
+            stack.getType() != Material.TNT) {
             return;
         }
 
-        // Use up a TNT
+        // Use up a TNT.
         int amount = stack.getAmount() - 1;
         if (amount > 1) {
             stack.setAmount(amount);
@@ -177,35 +191,37 @@ public class WingCommander extends JavaPlugin implements Listener {
             inventory.setItemInMainHand(null);
         }
 
-        // Spawn TNT
+        // Spawn TNT.
         Entity tnt = player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
 
         if (action == Action.LEFT_CLICK_AIR) {
-            // Throw the TNT forward
+            // Throw the TNT forward.
             Vector TNTVelocity = player.getLocation().getDirection();
             TNTVelocity.normalize();
             TNTVelocity.multiply(WingCommander.CONFIG.TNT_THROW_SPEED);
             TNTVelocity.add(player.getVelocity());
             tnt.setVelocity(TNTVelocity);
         } else if (action == Action.RIGHT_CLICK_AIR) {
-            // Drop the TNT with current velocity
+            // Drop the TNT with current velocity.
             tnt.setVelocity(player.getVelocity());
         }
-    } // OnPlayerInteract
+    } // onPlayerInteract
 
     // ------------------------------------------------------------------------
     /**
      * Return true if the player is wearing elytra.
      *
-     * Note that this method doesn't care whether the elytra are broken
-     * (durability <=1).
-     *
      * @param player the player.
-     * @return true if the player is wearing elytra.
+     * @param requireDurability if true, the elytra must have durability > 0; if
+     *        false, even broken elytra are considered valid.
+     * @return true if the player is wearing elytra, with durability if
+     *         required.
      */
-    protected static boolean isWearingElytra(Player player) {
+    protected static boolean isWearingElytra(Player player, boolean requireDurability) {
         ItemStack chest = player.getEquipment().getChestplate();
-        return chest != null && chest.getType() == Material.ELYTRA;
+        return chest != null &&
+               chest.getType() == Material.ELYTRA &&
+               (!requireDurability || Material.ELYTRA.getMaxDurability() - chest.getDurability() > 0);
     }
 
     // ------------------------------------------------------------------------
@@ -218,7 +234,7 @@ public class WingCommander extends JavaPlugin implements Listener {
      *         powered flight.
      */
     protected static boolean isFlightCapable(Player player) {
-        return isWearingElytra(player) && player.hasPermission("wingcommander.fly");
+        return isWearingElytra(player, false) && player.hasPermission("wingcommander.fly");
     }
 
     // ------------------------------------------------------------------------
