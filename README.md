@@ -1,6 +1,6 @@
 WingCommander
 =============
-A Minecraft 1.9 Bukkit plugin that makes elytra capable of powered flight.
+A Minecraft 1.9+ Bukkit plugin that makes elytra capable of powered flight.
 
 ![WingCommander 1.6.0](https://raw.github.com/totemo/WingCommander/master/images/screenshot.png)
 

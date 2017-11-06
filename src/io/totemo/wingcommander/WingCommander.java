@@ -158,18 +158,16 @@ public class WingCommander extends JavaPlugin implements Listener {
             return;
         }
 
-        PlayerInventory inventory = player.getInventory();
-        ItemStack stack = inventory.getItemInMainHand();
-
         // Assisted takeoff if wearing unbroken elytra.
+        // NOTE: event.getItem() allows off hand use.
         if (action == Action.RIGHT_CLICK_AIR &&
-            stack.getType() == Material.FIREWORK &&
+            event.getItem().getType() == Material.FIREWORK &&
             !player.isOnGround() &&
+            player.getVehicle() == null &&
             isWearingElytra(player, true)) {
 
-            // Player must be in air, not water (to be like vanilla).
             Block feetBlock = player.getLocation().getBlock();
-            if (feetBlock != null && feetBlock.getType() == Material.AIR) {
+            if (feetBlock != null && canAssistedTakeOffFrom(feetBlock.getType())) {
                 PlayerState state = getState(player);
                 state.setTakingOff();
                 player.setGliding(true);
@@ -177,6 +175,8 @@ public class WingCommander extends JavaPlugin implements Listener {
         }
 
         // Only throw TNT if permitted, gliding and holding TNT.
+        PlayerInventory inventory = player.getInventory();
+        ItemStack stack = inventory.getItemInMainHand();
         if (!player.hasPermission("wingcommander.tnt") ||
             !player.isGliding() ||
             stack.getType() != Material.TNT) {
@@ -206,6 +206,26 @@ public class WingCommander extends JavaPlugin implements Listener {
             tnt.setVelocity(player.getVelocity());
         }
     } // onPlayerInteract
+
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if the specified material at the player's feet allows
+     * assisted take-off.
+     * 
+     * So air, and transparent blocks like plants, snow and torches are fine,
+     * but liquids are not. The player must already be in glide mode to take off
+     * from water.
+     * 
+     * @return true if the specified material at the player's feet allows
+     *         assisted take-off.
+     */
+    protected static boolean canAssistedTakeOffFrom(Material material) {
+        return material.isTransparent() &&
+               material != Material.WATER &&
+               material != Material.STATIONARY_WATER &&
+               material != Material.LAVA &&
+               material != Material.STATIONARY_LAVA;
+    }
 
     // ------------------------------------------------------------------------
     /**
