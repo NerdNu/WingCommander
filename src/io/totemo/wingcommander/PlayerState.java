@@ -268,13 +268,16 @@ public class PlayerState {
 
         if (_gaugesPossible && WingCommander.CONFIG.WINGOMETER_ENABLED && _showWingometer) {
             ItemStack chest = _player.getEquipment().getChestplate();
-            int remainingDurability = Material.ELYTRA.getMaxDurability() - chest.getDurability();
-            double fraction = remainingDurability / (double) Material.ELYTRA.getMaxDurability();
-            int percentage = (int) (100 * fraction);
-            _wingsBossBar.setColor(WingCommander.CONFIG.getBarColor(WingCommander.CONFIG.WINGOMETER_COLOURS, percentage));
-            _wingsBossBar.setTitle(String.format("Wings: %d%%", percentage));
-            _wingsBossBar.setProgress(Math.min(1.0, Math.max(0.0, fraction)));
-            _wingsBossBar.setVisible(true);
+            // On player death, chest item stack becomes null.
+            if (chest != null) {
+                int remainingDurability = Material.ELYTRA.getMaxDurability() - chest.getDurability();
+                double fraction = remainingDurability / (double) Material.ELYTRA.getMaxDurability();
+                int percentage = (int) (100 * fraction);
+                _wingsBossBar.setColor(WingCommander.CONFIG.getBarColor(WingCommander.CONFIG.WINGOMETER_COLOURS, percentage));
+                _wingsBossBar.setTitle(String.format("Wings: %d%%", percentage));
+                _wingsBossBar.setProgress(Math.min(1.0, Math.max(0.0, fraction)));
+                _wingsBossBar.setVisible(true);
+            }
         } else {
             _wingsBossBar.setVisible(false);
         }
