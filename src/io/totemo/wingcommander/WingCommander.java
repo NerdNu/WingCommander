@@ -161,7 +161,7 @@ public class WingCommander extends JavaPlugin implements Listener {
         // Assisted takeoff if wearing unbroken elytra.
         // NOTE: event.getItem() allows off hand use.
         if (action == Action.RIGHT_CLICK_AIR &&
-            event.getItem().getType() == Material.FIREWORK &&
+            event.getItem().getType() == Material.FIREWORK_ROCKET &&
             !player.isOnGround() &&
             player.getVehicle() == null &&
             isWearingElytra(player, true)) {
@@ -222,9 +222,7 @@ public class WingCommander extends JavaPlugin implements Listener {
     protected static boolean canAssistedTakeOffFrom(Material material) {
         return material.isTransparent() &&
                material != Material.WATER &&
-               material != Material.STATIONARY_WATER &&
-               material != Material.LAVA &&
-               material != Material.STATIONARY_LAVA;
+               material != Material.LAVA;
     }
 
     // ------------------------------------------------------------------------

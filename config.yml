@@ -12,19 +12,12 @@ max_velocity: 2.0
 
 gauge_debounce_millis: 1000
 
-# Parameters to World.Spigot.playEffect().
-# Potentially good particles: LARGE_SMOKE, PARTICLE_SMOKE, EXPLOSION,
-# FIREWORKS_SPARK, FLAME, MOBSPAWNER_FLAMES, SMALL_SMOKE
+# Parameters to World.spawnParticle()
 exhaust:
-#  effect: EXPLOSION
   effect: FIREWORKS_SPARK
-  id: 0
-  data: 0
   offset: 0.3
   speed: 0.01
   count: 5
-  radius: 128
-#  sound: BLOCK_CHORUS_FLOWER_GROW
   sound: ENTITY_ELDER_GUARDIAN_AMBIENT
   volume: 4.0
 

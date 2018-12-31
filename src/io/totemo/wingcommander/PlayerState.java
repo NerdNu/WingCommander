@@ -350,17 +350,15 @@ public class PlayerState {
             }
             _player.setVelocity(velocity);
 
-            if (WingCommander.CONFIG.EXHAUST_EFFECT != null) {
-                loc.getWorld().spigot().playEffect(loc,
-                                                   WingCommander.CONFIG.EXHAUST_EFFECT,
-                                                   WingCommander.CONFIG.EXHAUST_ID,
-                                                   WingCommander.CONFIG.EXHAUST_DATA,
-                                                   WingCommander.CONFIG.EXHAUST_OFFSET,
-                                                   WingCommander.CONFIG.EXHAUST_OFFSET,
-                                                   WingCommander.CONFIG.EXHAUST_OFFSET,
-                                                   WingCommander.CONFIG.EXHAUST_SPEED,
-                                                   WingCommander.CONFIG.EXHAUST_COUNT,
-                                                   WingCommander.CONFIG.EXHAUST_RADIUS);
+            if (WingCommander.CONFIG.EXHAUST_PARTICLE != null) {
+                loc.getWorld().spawnParticle(WingCommander.CONFIG.EXHAUST_PARTICLE,
+                                             loc,
+                                             WingCommander.CONFIG.EXHAUST_COUNT,
+                                             WingCommander.CONFIG.EXHAUST_OFFSET,
+                                             WingCommander.CONFIG.EXHAUST_OFFSET,
+                                             WingCommander.CONFIG.EXHAUST_OFFSET,
+                                             WingCommander.CONFIG.EXHAUST_SPEED);
+
             }
 
             if (WingCommander.CONFIG.EXHAUST_SOUND != null) {

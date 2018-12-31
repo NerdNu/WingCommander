@@ -3,7 +3,7 @@ package io.totemo.wingcommander;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -59,17 +59,7 @@ public class Configuration {
      * Particle type of the exhaust trail, generated when power is applied, or
      * "none" to suppress particles.
      */
-    public Effect EXHAUST_EFFECT;
-
-    /**
-     * Block type ID for particle effects that use one.
-     */
-    public int EXHAUST_ID;
-
-    /**
-     * Block data for particle effects that use a block type.
-     */
-    public int EXHAUST_DATA;
+    public Particle EXHAUST_PARTICLE;
 
     /**
      * Maximum offset from the player position of spawned particles on all three
@@ -86,11 +76,6 @@ public class Configuration {
      * Number of spawned particles.
      */
     public int EXHAUST_COUNT;
-
-    /**
-     * Visibility radius of particles.
-     */
-    public int EXHAUST_RADIUS;
 
     /**
      * Engine sound when power is applied, or "none" to suppress sound.
@@ -241,17 +226,14 @@ public class Configuration {
         try {
             // Spigot Bug: Effect.getByName() does not recognise all Effect
             // names.
-            EXHAUST_EFFECT = exhaustEffectName.equalsIgnoreCase("NONE") ? null : Effect.valueOf(exhaustEffectName);
+            EXHAUST_PARTICLE = exhaustEffectName.equalsIgnoreCase("NONE") ? null : Particle.valueOf(exhaustEffectName);
         } catch (IllegalArgumentException ex) {
             WingCommander.PLUGIN.getLogger().warning("Invalid exhaust smoke effect name: \"" + exhaustEffectName + "\"");
-            EXHAUST_EFFECT = null;
+            EXHAUST_PARTICLE = null;
         }
-        EXHAUST_ID = WingCommander.PLUGIN.getConfig().getInt("exhaust.id");
-        EXHAUST_DATA = WingCommander.PLUGIN.getConfig().getInt("exhaust.data");
         EXHAUST_OFFSET = (float) WingCommander.PLUGIN.getConfig().getDouble("exhaust.offset");
         EXHAUST_SPEED = (float) WingCommander.PLUGIN.getConfig().getDouble("exhaust.speed");
         EXHAUST_COUNT = WingCommander.PLUGIN.getConfig().getInt("exhaust.count");
-        EXHAUST_RADIUS = WingCommander.PLUGIN.getConfig().getInt("exhaust.radius");
         EXHAUST_SOUND = loadSound("exhaust.sound", "exhaust sound");
         EXHAUST_VOLUME = (float) WingCommander.PLUGIN.getConfig().getDouble("exhaust.volume");
 

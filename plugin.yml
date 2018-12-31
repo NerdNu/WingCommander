@@ -5,6 +5,7 @@ authors: [totemo]
 description: ${project.description}
 website: ${project.url}
 main: io.totemo.wingcommander.WingCommander
+api-version: 1.13
 
 permissions:
   wingcommander.fly:
