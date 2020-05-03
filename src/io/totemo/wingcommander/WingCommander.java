@@ -167,7 +167,7 @@ public class WingCommander extends JavaPlugin implements Listener {
             isWearingElytra(player, true)) {
 
             Block feetBlock = player.getLocation().getBlock();
-            if (feetBlock != null && canAssistedTakeOffFrom(feetBlock.getType())) {
+            if (feetBlock != null && canAssistedTakeOffFrom(feetBlock)) {
                 PlayerState state = getState(player);
                 state.setTakingOff();
                 player.setGliding(true);
@@ -209,18 +209,20 @@ public class WingCommander extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
-     * Return true if the specified material at the player's feet allows
-     * assisted take-off.
+     * Return true if the specified block at the player's feet allows assisted
+     * take-off.
      * 
      * So air, and transparent blocks like plants, snow and torches are fine,
      * but liquids are not. The player must already be in glide mode to take off
      * from water.
      * 
+     * @param block the block at the player's feet.
      * @return true if the specified material at the player's feet allows
      *         assisted take-off.
      */
-    protected static boolean canAssistedTakeOffFrom(Material material) {
-        return material.isTransparent() &&
+    protected static boolean canAssistedTakeOffFrom(Block block) {
+        Material material = block.getType();
+        return block.isPassable() &&
                material != Material.WATER &&
                material != Material.LAVA;
     }
