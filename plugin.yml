@@ -5,18 +5,18 @@ authors: [totemo]
 description: ${project.description}
 website: ${project.url}
 main: io.totemo.wingcommander.WingCommander
-api-version: 1.13
+api-version: 1.15
 
 permissions:
   wingcommander.fly:
     description: Permission to use powered flight.
-    default: op
+    default: false
   wingcommander.gauge:
     description: Permission to use /gauge and see gauges.
-    default: op
+    default: false
   wingcommander.tnt:
     description: Permission to throw or drop TNT while flying.
-    default: op
+    default: false
   wingcommander.admin:
     description: Permission to administer the plugin.
     default: op
